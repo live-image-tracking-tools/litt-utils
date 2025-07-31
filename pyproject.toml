@@ -1,0 +1,136 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+[project]
+name = "litt-utils"
+description = "Short description"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT License" }
+dynamic = ['version']
+dependencies = [
+    # Add core dependencies
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.4",
+    "pytest-cov",
+    "mypy",
+    "pre-commit",
+    "ruff",
+    "ipython"
+]
+docs = [
+    "mkdocs-material",
+    "mkdocstrings[python]", 
+    "mkdocs-api-autonav",
+    "mkdocs-include-markdown-plugin",
+    "mike"
+]
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+litt-utils = { path = ".", editable = true }
+
+[tool.pixi.dependencies]
+python = "3.12.*"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+docs = { features = ["docs"], solve-group = "default"}
+
+[tool.pixi.feature.dev.tasks]
+test = "pytest tests"
+
+[tool.pixi.feature.docs.tasks]
+preview-docs = {cmd = "mkdocs serve"}
+
+[project.urls]
+repository = "https://github.com/live-image-tracking-tools/litt-utils"
+homepage = "https://github.com/live-image-tracking-tools/litt-utils"
+
+# https://github.com/charliermarsh/ruff
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# https://beta.ruff.rs/docs/rules/
+extend-select = [
+    "E",    # style errors
+    "W",    # style warnings
+    "F",    # flakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "C4",   # flake8-comprehensions
+    "B",    # flake8-bugbear
+    "A001", # flake8-builtins
+    "RUF",  # ruff-specific rules
+    "TID",  # tidy imports
+    "TCH",  # type checking
+    "D",    # pydocstyle
+    "T20"   # print statements
+]
+
+extend-ignore = [
+    "D100", # Missing docstring in public module
+    "D107", # Missing docstring in __init__
+    "D203", # 1 blank line required before class docstring
+    "D212", # Multi-line docstring summary should start at the first line
+    "D213", # Multi-line docstring summary should start at the second line
+    "D401", # First line should be in imperative mood
+    "D413", # Missing blank line after last section
+    "D416", # Section name should end with a colon
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]  # unused imports in init files
+"tests/*.py" = ["D"]
+
+# https://docs.pytest.org/en/6.2.x/customize.html
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+pythonpath = [
+  "tests"
+]
+
+# https://mypy.readthedocs.io/en/stable/config_file.html
+[tool.mypy]
+files = "src/**/"
+disallow_any_generics = false
+disallow_subclassing_any = false
+show_error_codes = true
+pretty = true
+
+# https://coverage.readthedocs.io/en/6.4/config.html
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "@overload",
+    "except ImportError",
+    "\\.\\.\\.",
+    "raise NotImplementedError()",
+    "pass",
+]
+[tool.coverage.run]
+source = ["src/litt-utils"]
